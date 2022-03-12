@@ -47,7 +47,7 @@ class ExpandableByteBuffer(maxsize: Int) {
 
   def sizeHint(hint: Int): Unit = {
     if (hint > array.length && hint >= 1) {
-      val newarray = allocate(bitCeiling(hint).toInt)
+      val newarray = allocate(IO.power_ceil(hint))
 
       System.arraycopy(array, 0, newarray, 0, _size)
       array = newarray

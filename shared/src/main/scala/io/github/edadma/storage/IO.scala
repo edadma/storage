@@ -11,6 +11,24 @@ import scala.annotation.tailrec
 object IO {
   private[storage] val pwidth_default = 5
   private[storage] val cwidth_default = 8
+
+  def power_ceil(n: Int): Int =
+    require(n >= 0, s"power_ceil: $n is below min input of 0")
+    require(n <= 1073741824, s"power_ceil: $n is above max input of 1073741824")
+
+    n match
+      case 0 | 1 => 1
+      case _ =>
+        var x = n - 1
+        var res = 2
+
+        while ({ x >>= 1; x != 0 }) res <<= 1
+
+        res
+
+  def timestamp: Instant = Instant.now
+
+  def datetime: OffsetDateTime = OffsetDateTime.now
 }
 
 abstract class IO extends IOConstants {
@@ -25,7 +43,7 @@ abstract class IO extends IOConstants {
   private[storage] lazy val vwidth = 1 + cwidth // value width
   private[storage] lazy val twidth = 1 + 2 * vwidth // pair width
   private[storage] lazy val ewidth = 1 + vwidth // element width
-  private[storage] lazy val minblocksize = bitCeiling(vwidth + 1).toInt // smallest allocation block needed
+  private[storage] lazy val minblocksize = IO.power_ceil(vwidth + 1) // smallest allocation block needed
   private[storage] lazy val sizeShift = Integer.numberOfTrailingZeros(minblocksize)
   private[storage] lazy val bucketLen = pwidth * 8 - sizeShift
 
@@ -399,7 +417,7 @@ abstract class IO extends IOConstants {
 
         io.putByte(MEMBERS)
         io.putObject(a)
-      case a: collection.IterableOnce[_] if a.isEmpty =>
+      case a: collection.IterableOnce[_] if a.iterator.isEmpty =>
         putByte(NIL)
         pad(cwidth)
       case a: collection.IterableOnce[_] =>
@@ -539,7 +557,7 @@ abstract class IO extends IOConstants {
 
     padBig() // length of chunk in bytes
 
-    for (e <- s) {
+    for (e <- s.iterator) {
       putByte(USED)
       putValue(e)
       count += 1
