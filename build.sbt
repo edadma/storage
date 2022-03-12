@@ -1,10 +1,10 @@
 ThisBuild / licenses += "ISC" -> url("https://opensource.org/licenses/ISC")
 ThisBuild / versionScheme := Some("semver-spec")
 
-lazy val cross_template = crossProject(JSPlatform, JVMPlatform, NativePlatform)
+lazy val storage = crossProject(JSPlatform, JVMPlatform /*, NativePlatform*/ )
   .in(file("."))
   .settings(
-    name := "-cross-template",
+    name := "storage",
     version := "0.1.0",
     scalaVersion := "3.1.1",
     scalacOptions ++=
@@ -31,14 +31,14 @@ lazy val cross_template = crossProject(JSPlatform, JVMPlatform, NativePlatform)
     ),
     publishMavenStyle := true,
     Test / publishArtifact := false,
-    licenses += "ISC" -> url("https://opensource.org/licenses/ISC")
+    licenses += "ISC" -> url("https://opensource.org/licenses/ISC"),
   )
   .jvmSettings(
     libraryDependencies += "org.scala-js" %% "scalajs-stubs" % "1.1.0" % "provided",
   )
-  .nativeSettings(
-    nativeLinkStubs := true
-  )
+//  .nativeSettings(
+//    nativeLinkStubs := true,
+//  )
   .jsSettings(
     jsEnv := new org.scalajs.jsenv.nodejs.NodeJSEnv(),
 //    Test / scalaJSUseMainModuleInitializer := true,
