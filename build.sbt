@@ -5,7 +5,7 @@ lazy val storage = crossProject(JSPlatform, JVMPlatform /*, NativePlatform*/ )
   .in(file("."))
   .settings(
     name := "storage",
-    version := "0.1.0",
+    version := "0.1.0-pre.1",
     scalaVersion := "3.1.1",
     scalacOptions ++=
       Seq(
